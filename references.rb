@@ -1,4 +1,3 @@
-
 # references.rb: jekyll markdown references plugin
 #
 # add this file to your _plugins directory (create it if needed)
@@ -31,7 +30,7 @@ module Jekyll
       end
 
       # append content of _references.md, whatever it is
-      @content += @@refs_content
+      @content += "\n" + @@refs_content
     end
   end
 end

@@ -1,43 +1,47 @@
-# references.rb: jekyll markdown references plugin
+# references.rb: Jekyll Markdown references plugin
 #
-# Get it from: https://gist.github.com/olov/961336
+# Created by Olov Lassus, Public Domain license.
+# https://github.com/olov/jekyll-references
 #
 # CHANGES
-# 2013-05-06: Updated to support Jekyll 1.0
-#             (still works with older Jekyll versions)
+# 2013-05-06:
+# * Updated to support Jekyll 1.0
+#   (should still work with older Jekyll versions)
+# * Works on all Markdown transformations, files or snippets
 #
-# add this file to your _plugins directory (create it if needed)
-# create a file (exactly) named _references.md in your Jekyll site root,
+# USAGE
+# Add this file to your _plugins directory (create it if needed).
+# Create a file named _references.md in your Jekyll site root,
 # then add your markdown reference-style link definitions to it.
-# for example:
-#   [jsshaper]: http://jsshaper.org  "an extensible framework for JavaScript syntax tree shaping"
+# For example:
+#   [google]: http://www.google.com  "Google it!"
+#   [wiki]: http://wikipedia.org  "Online Encyclopedia"
+#   [id]: url  "tooltip"
 #
-# you can now reference these links in any markdown file
-# for example:
-#   You should [check out JSShaper][jsshaper]
+# You can now reference these links in any markdown file.
+# For example:
+# [Google][google] is a popular search engine and [Wikipedia][wiki] an
+# online encyclopedia.
 
 module Jekyll
-  module Convertible
-    alias old_read_yaml read_yaml
-    @@refs_content = nil
+  module Converters
+    class Markdown < Converter
+      alias old_convert convert
+      @@refs_content = nil
 
-    def read_yaml(base, name)
-      # loads file, sets @content, @data
-      old_read_yaml(base, name)
+      def convert(content)
+        # read and cache content of _references.md
+        if @@refs_content.nil?
+          refs_path = File.join(@config["source"], "_references.md")
+          @@refs_content = if File.exist?(refs_path) then File.read(refs_path)
+                           else "" end
+        end
 
-      # only alter markdown files
-      md_class = ((defined? MarkdownConverter) ? MarkdownConverter : Jekyll::Converters::Markdown)
-      return unless converter.instance_of? md_class
+        # append content of _references.md, whatever it is
+        content += "\n" + @@refs_content
 
-      # read and cache content of _references.md
-      if @@refs_content.nil?
-        refs_path = File.join(site.source, "_references.md")
-        @@refs_content = if File.exist?(refs_path) then File.read(refs_path) 
-                         else "" end
+        old_convert(content)
       end
-
-      # append content of _references.md, whatever it is
-      @content += "\n" + @@refs_content
     end
   end
 end

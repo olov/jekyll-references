@@ -2,10 +2,12 @@
 
 Created by Olov Lassus, Public Domain license.
 
-https://github.com/olov/jekyll-references
+Version 1.0
+
+[Upstream GitHub project](https://github.com/olov/jekyll-references)
 
 ### Usage
-Add this file to your `_plugins` directory (create it if needed).
+Add `references.rb` file to your `_plugins` directory (create it if needed).
 Create a file named `_references.md` in your Jekyll site root,
 then add your markdown reference-style link definitions to it.
 

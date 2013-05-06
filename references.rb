@@ -1,16 +1,17 @@
 # references.rb: Jekyll Markdown references plugin
 #
 # Created by Olov Lassus, Public Domain license.
+# Version 1.0
 # https://github.com/olov/jekyll-references
 #
 # CHANGES
-# 2013-05-06:
+# 2013-05-06: v1.0
 # * Updated to support Jekyll 1.0
 #   (should still work with older Jekyll versions)
 # * Works on all Markdown transformations, files or snippets
 #
 # USAGE
-# Add this file to your _plugins directory (create it if needed).
+# Add references.rb to your _plugins directory (create it if needed).
 # Create a file named _references.md in your Jekyll site root,
 # then add your markdown reference-style link definitions to it.
 # For example:

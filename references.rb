@@ -1,5 +1,11 @@
 # references.rb: jekyll markdown references plugin
 #
+# Get it from: https://gist.github.com/olov/961336
+#
+# CHANGES
+# 2013-05-06: Updated to support Jekyll 1.0
+#             (still works with older Jekyll versions)
+#
 # add this file to your _plugins directory (create it if needed)
 # create a file (exactly) named _references.md in your Jekyll site root,
 # then add your markdown reference-style link definitions to it.
@@ -20,7 +26,8 @@ module Jekyll
       old_read_yaml(base, name)
 
       # only alter markdown files
-      return unless converter.instance_of? MarkdownConverter
+      md_class = ((defined? MarkdownConverter) ? MarkdownConverter : Jekyll::Converters::Markdown)
+      return unless converter.instance_of? md_class
 
       # read and cache content of _references.md
       if @@refs_content.nil?

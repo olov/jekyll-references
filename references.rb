@@ -19,6 +19,9 @@
 #   [wiki]: http://wikipedia.org  "Online Encyclopedia"
 #   [id]: url  "tooltip"
 #
+# Lines beginning with a hash character will be ignored, so you can
+# add comments to your references file.
+#
 # You can now reference these links in any markdown file.
 # For example:
 # [Google][google] is a popular search engine and [Wikipedia][wiki] an
@@ -36,7 +39,11 @@ module Jekyll
           refs_path = File.join(@config["source"], "_references.md")
           @@refs_content = if File.exist?(refs_path) then File.read(refs_path)
                            else "" end
+
+          # Remove comments from file.
+          @@refs_content = @@refs_content.gsub(/^#[^\n]*\n/, '')
         end
+
 
         # append content of _references.md, whatever it is
         content += "\n" + @@refs_content

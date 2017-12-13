@@ -1,7 +1,7 @@
 # references.rb: Jekyll Markdown references plugin
 #
 # Created by Olov Lassus, Public Domain license.
-# Version 1.0
+# Version 2.0
 # https://github.com/olov/jekyll-references
 #
 # CHANGES
@@ -9,6 +9,12 @@
 # * Updated to support Jekyll 1.0
 #   (should still work with older Jekyll versions)
 # * Works on all Markdown transformations, files or snippets
+#
+# 2017-12-13: v2.0
+# * Updated to support Jekyll 3.x
+#   (should still work with older Jekyll versions)
+# * Only add labels for referenced links. Fixes #2
+# * Only add labels if not already in content.
 #
 # USAGE
 # Add references.rb to your _plugins directory (create it if needed).
@@ -19,8 +25,8 @@
 #   [wiki]: http://wikipedia.org  "Online Encyclopedia"
 #   [id]: url  "tooltip"
 #
-# Lines beginning with a hash character will be ignored, so you can
-# add comments to your references file.
+# Only labels will be read from the references file. Everything else
+# will be ignored, so you can safely add comments or other content.
 #
 # You can now reference these links in any markdown file.
 # For example:
@@ -31,23 +37,34 @@ module Jekyll
   module Converters
     class Markdown < Converter
       alias old_convert convert
-      @@refs_content = nil
+      @@links = nil
+
+      LINK_REGEX = /(\[[^\[\]]+?\])(?=\s*[^\[ (:])/ # http://rubular.com/r/ahGtMifv6C
+      LABEL_REGEX = /(\[[^\[\]]+?\]):\s*(.+)/
+
+      # return hash of label => link with keys normalised to lower case
+      def labels_from(s)
+        h = {}
+        s.scan(LABEL_REGEX).flatten.each_slice(2) { |k| k.first.downcase!; h.store(*k) }
+        h
+      end
 
       def convert(content)
-        # read and cache content of _references.md
-        if @@refs_content.nil?
+        # read and cache references from _references.md as hash of label => link
+        if @@links.nil?
           refs_path = File.join(@config["source"], "_references.md")
-          @@refs_content = if File.exist?(refs_path) then File.read(refs_path)
-                           else "" end
-
-          # Remove comments from file.
-          @@refs_content = @@refs_content.gsub(/^#[^\n]*\n/, '')
+          refs = if File.exist?(refs_path) then File.read(refs_path) else '' end
+          @@links = labels_from refs
         end
 
-
-        # append content of _references.md, whatever it is
-        content += "\n" + @@refs_content
-
+        # Append labels for links where a label is absent from the content
+        links = labels_from content
+        content.scan(LINK_REGEX).flatten.uniq.each do |k|
+          k.downcase!
+          if !links.include?(k) and v = @@links[k]
+            content << "\n#{k}:#{v}"
+          end
+        end
         old_convert(content)
       end
     end

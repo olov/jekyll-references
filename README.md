@@ -2,7 +2,7 @@
 
 Created by Olov Lassus, Public Domain license.
 
-Version 1.0
+Version 2.0
 
 [Upstream GitHub project](https://github.com/olov/jekyll-references)
 
